@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLab - 数学实验室</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Lora:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #2c3e50;
+            --button-color: #ffffff;
+            --button-text-color: #2c3e50;
+            --button-hover-color: #f0f0f0;
+            --card-background: rgba(255, 255, 255, 0.9);
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: 'Noto Sans SC', 'Poppins', sans-serif;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #FF4500, #FFA500, #FFD700, #7CFC00, #1E90FF, #9400D3);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            z-index: -1;
+        }
+        .container {
+            background-color: var(--card-background);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 800px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            z-index: 1;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        #welcomeScreen, #themeSelectionScreen, #experimentScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        #themeSelectionScreen, #experimentScreen {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+        .welcome-text {
+            font-family: 'Lora', serif;
+            font-size: 72px;
+            font-weight: 700;
+            margin: 0 0 15px;
+            background: linear-gradient(45deg, #FF4500, #FFA500, #FFD700, #7CFC00, #1E90FF, #9400D3);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: welcomeAnimation 5s ease-in-out infinite, float 3s ease-in-out infinite;
+            background-size: 400% 400%;
+            line-height: 1;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+        }
+        .theme-selection-title {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--text-color);
+        }
+        .mathlab-by {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            opacity: 0.8;
+            animation: breathe 4s ease-in-out infinite;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+        }
+        .button {
+            font-size: 20px;
+            font-weight: 500;
+            padding: 10px 20px;
+            background-color: var(--button-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 8px;
+            position: relative;
+            overflow: visible;
+        }
+        .button:hover, .button:focus {
+            background-color: var(--button-hover-color);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        .button:active {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(0);
+        }
+        .theme-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .theme-button {
+            font-size: 18px;
+            padding: 15px 10px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .theme-button:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+        }
+        .theme-button i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #3498db;
+        }
+        #experimentContainer {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        #toolbox {
+            height: 100px;
+            background-color: #e0e0e0;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+        }
+        .tool {
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+        .tool:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #experimentArea {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: move;
+        }
+        .undo-redo {
+            display: flex;
+            gap: 10px;
+        }
+        .undo-redo button {
+            font-size: 18px;
+            padding: 5px 10px;
+        }
+        @keyframes welcomeAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        @keyframes breathe {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader"></div>
+    </div>
+    <div class="animated-background" aria-hidden="true"></div>
+    <div class="container" role="main">
+        <div id="welcomeScreen">
+            <h1 class="welcome-text">MLab</h1>
+            <div class="mathlab-by" aria-label="Created by Etin Leo">By Etin Leo</div>
+            <button id="startButton" class="button" onclick="startExploration()" aria-label="Start exploring MLab">
+                Start
+            </button>
+        </div>
+        <div id="themeSelectionScreen">
+            <h2 class="theme-selection-title">选择主题</h2>
+            <div class="theme-buttons">
+                <button class="button theme-button" onclick="selectTheme('数与运算')">
+                    <i class="fas fa-calculator"></i>
+                    数与运算
+                </button>
+                <button class="button theme-button" onclick="selectTheme('量与计量')">
+                    <i class="fas fa-balance-scale"></i>
+                    量与计量
+                </button>
+                <button class="button theme-button" onclick="selectTheme('图形与几何')">
+                    <i class="fas fa-shapes"></i>
+                    图形与几何
+                </button>
+                <button class="button theme-button" onclick="selectTheme('概率与统计')">
+                    <i class="fas fa-chart-bar"></i>
+                    概率与统计
+                </button>
+            </div>
+        </div>
+        <div id="experimentScreen">
+            <div id="experimentContainer">
+                <div id="toolbox">
+                    <div>
+                        <div class="tool" data-tool="number">123</div>
+                        <div class="tool" data-tool="addition">+</div>
+                        <div class="tool" data-tool="subtraction">-</div>
+                        <div class="tool" data-tool="multiplication">×</div>
+                        <div class="tool" data-tool="division">÷</div>
+                        <div class="tool" data-tool="parenthesis">()</div>
+                        <div class="tool" data-tool="exponent">x<sup>y</sup></div>
+                        <div class="tool" data-tool="sqrt">√</div>
+                    </div>
+                    <div class="undo-redo">
+                        <button id="undoButton" class="button" onclick="undo()">撤销</button>
+                        <button id="redoButton" class="button" onclick="redo()">重做</button>
+                        <button id="calculateButton" class="button" onclick="calculate()">计算</button>
+                    </div>
+                    <button id="backButton" class="button" onclick="goBack()">返回</button>
+                </div>
+                <div id="experimentArea">
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function startExploration() {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const themeSelectionScreen = document.getElementById('themeSelectionScreen');
+
+            welcomeScreen.style.opacity = '0';
+            welcomeScreen.style.transform = 'translateY(-20px)';
+            welcomeScreen.style.pointerEvents = 'none';
+
+            setTimeout(() => {
+                themeSelectionScreen.style.opacity = '1';
+                themeSelectionScreen.style.transform = 'translateY(0)';
+                themeSelectionScreen.style.pointerEvents = 'auto';
+            }, 250);
+        }
+
+        function selectTheme(theme) {
+            console.log(`Selected theme: ${theme}`);
+            const button = event.target.closest('.theme-button');
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = '';
+            }, 100);
+
+            if (theme === '数与运算') {
+                showExperimentScreen();
+            }
+        }
+
+        function showExperimentScreen() {
+            const themeSelectionScreen = document.getElementById('themeSelectionScreen');
+            const experimentScreen = document.getElementById('experimentScreen');
+
+            themeSelectionScreen.style.opacity = '0';
+            themeSelectionScreen.style.transform = 'translateY(-20px)';
+            themeSelectionScreen.style.pointerEvents = 'none';
+
+            setTimeout(() => {
+                experimentScreen.style.opacity = '1';
+                experimentScreen.style.transform = 'translateY(0)';
+                experimentScreen.style.pointerEvents = 'auto';
+                initializeExperiment();
+            }, 250);
+        }
+
+      function initializeExperiment() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const tools = document.querySelectorAll('.tool');
+            let selectedTool = null;
+            let objects = [];
+            let draggedObject = null;
+            let offsetX, offsetY;
+            let history = [];
+            let historyIndex = -1;
+            let calculationResult = null;
+
+            function resizeCanvas() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                drawObjects();
+            }
+
+            function drawObjects() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                objects.forEach(obj => {
+                    ctx.font = '24px Arial';
+                    ctx.fillStyle = 'black';
+                    ctx.fillText(obj.text, obj.x, obj.y);
+                });
+                if (calculationResult !== null) {
+                    ctx.font = 'bold 28px Arial';
+                    ctx.fillStyle = 'green';
+                    ctx.fillText(`= ${calculationResult}`, 10, canvas.height - 10);
+                }
+            }
+
+            function addToHistory() {
+                historyIndex++;
+                history = history.slice(0, historyIndex);
+                history.push(JSON.parse(JSON.stringify(objects)));
+                updateUndoRedoButtons();
+            }
+
+            function updateUndoRedoButtons() {
+                document.getElementById('undoButton').disabled = historyIndex <= 0;
+                document.getElementById('redoButton').disabled = historyIndex >= history.length - 1;
+            }
+
+            tools.forEach(tool => {
+                tool.addEventListener('click', () => {
+                    selectedTool = tool.dataset.tool;
+                    tools.forEach(t => t.style.backgroundColor = '#fff');
+                    tool.style.backgroundColor = '#e0e0e0';
+                });
+            });
+
+            canvas.addEventListener('mousedown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                for (let i = objects.length - 1; i >= 0; i--) {
+                    const obj = objects[i];
+                    if (x >= obj.x && x <= obj.x + ctx.measureText(obj.text).width &&
+                        y >= obj.y - 24 && y <= obj.y) {
+                        draggedObject = obj;
+                        offsetX = x - obj.x;
+                        offsetY = y - obj.y;
+                        return;
+                    }
+                }
+
+                if (selectedTool) {
+                    let text = '';
+                    switch (selectedTool) {
+                        case 'number':
+                            text = Math.floor(Math.random() * 100).toString();
+                            break;
+                        case 'addition':
+                            text = '+';
+                            break;
+                        case 'subtraction':
+                            text = '-';
+                            break;
+                        case 'multiplication':
+                            text = '×';
+                            break;
+                        case 'division':
+                            text = '÷';
+                            break;
+                        case 'parenthesis':
+                            text = '()';
+                            break;
+                        case 'exponent':
+                            text = '^';
+                            break;
+                        case 'sqrt':
+                            text = '√';
+                            break;
+                    }
+                    objects.push({ x, y, text });
+                    addToHistory();
+                    drawObjects();
+                }
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (draggedObject) {
+                    const rect = canvas.getBoundingClientRect();
+                    draggedObject.x = e.clientX - rect.left - offsetX;
+                    draggedObject.y = e.clientY - rect.top - offsetY;
+                    drawObjects();
+                }
+            });
+
+            canvas.addEventListener('mouseup', () => {
+                if (draggedObject) {
+                    addToHistory();
+                    draggedObject = null;
+                }
+            });
+
+            function undo() {
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    objects = JSON.parse(JSON.stringify(history[historyIndex]));
+                    drawObjects();
+                    updateUndoRedoButtons();
+                }
+            }
+
+            function redo() {
+                if (historyIndex < history.length - 1) {
+                    historyIndex++;
+                    objects = JSON.parse(JSON.stringify(history[historyIndex]));
+                    drawObjects();
+                    updateUndoRedoButtons();
+                }
+            }
+
+            function calculate() {
+                const expression = objects.map(obj => obj.text).join(' ').replace(/×/g, '*').replace(/÷/g, '/');
+                try {
+                    calculationResult = evaluateExpression(expression);
+                    drawObjects();
+                } catch (error) {
+                    alert('无效的表达式');
+                }
+            }
+
+            function evaluateExpression(expression) {
+                const tokens = tokenize(expression);
+                const postfix = infixToPostfix(tokens);
+                return evaluatePostfix(postfix);
+            }
+
+            function tokenize(expression) {
+                return expression.match(/\d+|\+|-|\*|\/|\^|\(|\)|√/g) || [];
+            }
+
+            function infixToPostfix(tokens) {
+                const precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3, '√': 3};
+                const output = [];
+                const operators = [];
+
+                for (const token of tokens) {
+                    if (!isNaN(token)) {
+                        output.push(parseFloat(token));
+                    } else if (token === '(') {
+                        operators.push(token);
+                    } else if (token === ')') {
+                        while (operators.length && operators[operators.length - 1] !== '(') {
+                            output.push(operators.pop());
+                        }
+                        operators.pop(); // Remove '('
+                    } else {
+                        while (operators.length && precedence[operators[operators.length - 1]] >= precedence[token]) {
+                            output.push(operators.pop());
+                        }
+                        operators.push(token);
+                    }
+                }
+
+                while (operators.length) {
+                    output.push(operators.pop());
+                }
+
+                return output;
+            }
+
+            function evaluatePostfix(postfix) {
+                const stack = [];
+
+                for (const token of postfix) {
+                    if (typeof token === 'number') {
+                        stack.push(token);
+                    } else {
+                        const b = stack.pop();
+                        const a = token === '√' ? 0 : stack.pop();
+
+                        switch (token) {
+                            case '+': stack.push(a + b); break;
+                            case '-': stack.push(a - b); break;
+                            case '*': stack.push(a * b); break;
+                            case '/': stack.push(a / b); break;
+                            case '^': stack.push(Math.pow(a, b)); break;
+                            case '√': stack.push(Math.sqrt(b)); break;
+                        }
+                    }
+                }
+
+                return stack[0];
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            addToHistory();
+
+            // 将函数绑定到全局作用域
+            window.undo = undo;
+            window.redo = redo;
+            window.calculate = calculate;
+        }
+
+        function goBack() {
+            const experimentScreen = document.getElementById('experimentScreen');
+            const themeSelectionScreen = document.getElementById('themeSelectionScreen');
+
+            experimentScreen.style.opacity = '0';
+            experimentScreen.style.transform = 'translateY(-20px)';
+            experimentScreen.style.pointerEvents = 'none';
+
+            setTimeout(() => {
+                themeSelectionScreen.style.opacity = '1';
+                themeSelectionScreen.style.transform = 'translateY(0)';
+                themeSelectionScreen.style.pointerEvents = 'auto';
+            }, 250);
+        }
+
+        window.addEventListener('load', function() {
+            document.querySelector('.container').style.opacity = '1';
+            document.getElementById('loading-screen').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
