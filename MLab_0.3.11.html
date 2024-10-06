@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLab - 数学实验室</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Lora:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #2c3e50;
+            --button-color: rgba(255, 255, 255, 0.7);
+            --button-text-color: #2c3e50;
+            --button-hover-color: rgba(255, 255, 255, 0.9);
+            --card-background: rgba(255, 255, 255, 0.7);
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: 'Noto Sans SC', 'Poppins', sans-serif;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #FF4500, #FFA500, #FFD700, #7CFC00, #1E90FF, #9400D3);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            z-index: -1;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            text-align: center;
+            width: 40%;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 1;
+            position: relative;
+            overflow: visible; /* 修改为 visible 以防止工具提示被裁剪 */
+            transition: all 0.5s ease-in-out;
+        }
+        #welcomeScreen, #themeSelectionScreen, #experimentScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        #themeSelectionScreen, #experimentScreen {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+        .welcome-text {
+            font-family: 'Lora', serif;
+            font-size: 60px;
+            font-weight: 700;
+            margin: 0 0 15px;
+            background: linear-gradient(45deg, #FF4500, #FFA500, #FFD700, #7CFC00, #1E90FF, #9400D3);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 400% 400%;
+            animation: welcomeAnimation 5s ease-in-out infinite;
+        }
+        .theme-selection-title {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+        .mathlab-by {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+        .button, .theme-button {
+            font-size: 16px;
+            font-weight: 500;
+            padding: 8px 16px;
+            background-color: var(--button-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 8px;
+            white-space: nowrap;
+            position: relative;
+        }
+        .button:hover, .theme-button:hover {
+            background-color: var(--button-hover-color);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        .theme-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 360px;
+        }
+        #experimentContainer {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        #controlPanel {
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(204, 204, 204, 0.5);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .control-button {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(204, 204, 204, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 20; /* 提升 z-index 以确保工具提示显示在上方 */
+        }
+        .control-button:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .control-button:active {
+            transform: translateY(1px);
+        }
+        .tooltip {
+            visibility: hidden;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 30; /* 确保工具提示在最上层 */
+            top: 100%; /* 调整为在按钮下方显示 */
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+            margin-top: 5px; /* 增加一点间距 */
+        }
+        .control-button:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        #backButton {
+            position: relative;
+        }
+        #backButton .tooltip {
+            top: 100%;
+            margin-top: 5px;
+        }
+        #workbench {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            margin-top: 60px;
+            transition: opacity 0.5s ease;
+        }
+        #floatingToolbox {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            max-width: 90%;
+            overflow-x: auto;
+        }
+        .math-tool {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(204, 204, 204, 0.5);
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            user-select: none;
+            position: relative;
+        }
+        .math-tool:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .math-tool-dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        @keyframes welcomeAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* 新增淡出动画类 */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader"></div>
+    </div>
+    <div class="animated-background" aria-hidden="true"></div>
+    <div class="container" role="main">
+        <div id="welcomeScreen">
+            <h1 id="mlab" class="welcome-text">MLab</h1>
+            <div class="mathlab-by" aria-label="Created by Etin Leo">By Etin Leo</div>
+            <button id="startButton" class="button" onclick="startExploration()" aria-label="Start exploring MLab">
+                Start
+            </button>
+        </div>
+        <div id="themeSelectionScreen">
+            <h2 class="theme-selection-title">选择主题</h2>
+            <div class="theme-buttons">
+                <button class="theme-button" onclick="selectTheme('数与运算')">
+                    <i class="fas fa-calculator"></i>
+                    数与运算
+                </button>
+                <button class="theme-button" onclick="selectTheme('量与计量')">
+                    <i class="fas fa-balance-scale"></i>
+                    量与计量
+                </button>
+                <button class="theme-button" onclick="selectTheme('图形与几何')">
+                    <i class="fas fa-shapes"></i>
+                    图形与几何
+                </button>
+                <button class="theme-button" onclick="selectTheme('概率与统计')">
+                    <i class="fas fa-chart-bar"></i>
+                    概率与统计
+                </button>
+            </div>
+        </div>
+        <div id="experimentScreen">
+            <div id="experimentContainer">
+                <div id="controlPanel">
+                    <div class="control-buttons">
+                        <button class="control-button" onclick="undo()" aria-label="撤销">
+                            <i class="fas fa-undo"></i>
+                            <span class="tooltip">撤销上一步操作</span>
+                        </button>
+                        <button class="control-button" onclick="redo()" aria-label="重做">
+                            <i class="fas fa-redo"></i>
+                            <span class="tooltip">重做上一步操作</span>
+                        </button>
+                        <button class="control-button" onclick="clearWorkbench()" aria-label="清空工作台">
+                            <i class="fas fa-trash-alt"></i>
+                            <span class="tooltip">清空工作台上的所有工具</span>
+                        </button>
+                    </div>
+                    <button id="backButton" class="button" onclick="goBack()" aria-label="返回">
+                        返回
+                        <span class="tooltip">返回主题选择界面</span>
+                    </button>
+                </div>
+                <div id="workbench"></div>
+                <div id="floatingToolbox">
+                    <!-- 数字 -->
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="0">0</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="1">1</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="2">2</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="3">3</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="4">4</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="5">5</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="6">6</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="7">7</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="8">8</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="9">9</div>
+                    <!-- 括号 -->
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="left-parenthesis">（</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="right-parenthesis">）</div>
+                    <!-- 变量 -->
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="x">x</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="y">y</div>
+                    <!-- 等号 -->
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="equal">=</div>
+                    <!-- 操作符 -->
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="addition">+</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="subtraction">-</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="multiplication">×</div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="division">÷</div>
+                    <!-- 高级操作符 -->
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="exponent">x<sup>y</sup></div>
+                    <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="sqrt">√</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function startExploration() {
+            transitionScreens('welcomeScreen', 'themeSelectionScreen');
+        }
+
+        function selectTheme(theme) {
+            console.log(`Selected theme: ${theme}`);
+            const button = event.target.closest('.theme-button');
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = '';
+            }, 100);
+
+            if (theme === '数与运算') {
+                transitionScreens('themeSelectionScreen', 'experimentScreen');
+            }
+        }
+
+        function transitionScreens(fromScreen, toScreen) {
+            const from = document.getElementById(fromScreen);
+            const to = document.getElementById(toScreen);
+            const container = document.querySelector('.container');
+
+            from.style.opacity = '0';
+            from.style.transform = 'translateY(-20px)';
+            from.style.pointerEvents = 'none';
+
+            // Adjust container size based on the target screen
+            if (toScreen === 'welcomeScreen') {
+                container.style.width = '40%';
+                container.style.height = '250px';
+            } else if (toScreen === 'themeSelectionScreen') {
+                container.style.width = '60%';
+                container.style.height = '350px';
+            } else if (toScreen === 'experimentScreen') {
+                container.style.width = '90%';
+                container.style.height = '80vh';
+            }
+
+            setTimeout(() => {
+                to.style.opacity = '1';
+                to.style.transform = 'translateY(0)';
+                to.style.pointerEvents = 'auto';
+                if (toScreen === 'experimentScreen') {
+                    initializeExperiment();
+                }
+            }, 250);
+        }
+
+        let workbenchState = [];
+        let undoStack = [];
+        let redoStack = [];
+
+        function initializeExperiment() {
+            console.log("Experiment initialized");
+            const workbench = document.getElementById('workbench');
+            workbench.addEventListener('dragover', allowDrop);
+            workbench.addEventListener('drop', drop);
+        }
+
+        function drag(event) {
+            const tool = event.currentTarget.getAttribute('data-tool');
+            event.dataTransfer.setData("text", tool);
+
+            // 创建自定义拖动图像
+            const dragIcon = event.currentTarget.cloneNode(true);
+            dragIcon.style.position = 'absolute';
+            dragIcon.style.top = '-1000px';
+            dragIcon.style.left = '-1000px';
+            dragIcon.style.pointerEvents = 'none';
+            dragIcon.style.opacity = '0.8';
+            dragIcon.style.background = 'rgba(255,255,255,0.9)';
+            dragIcon.style.border = '1px solid #ccc';
+            dragIcon.style.borderRadius = '5px';
+            dragIcon.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+            dragIcon.style.fontSize = '18px';
+            dragIcon.style.fontFamily = 'inherit';
+            dragIcon.style.whiteSpace = 'nowrap';
+            dragIcon.innerHTML = getToolSymbolHTML(tool); // 使用 innerHTML 确保符号正确显示
+            document.body.appendChild(dragIcon);
+            event.dataTransfer.setDragImage(dragIcon, dragIcon.offsetWidth / 2, dragIcon.offsetHeight / 2);
+
+            // 延迟移除自定义拖动图像
+            setTimeout(() => {
+                document.body.removeChild(dragIcon);
+            }, 0);
+
+            event.currentTarget.classList.add('math-tool-dragging');
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const tool = event.dataTransfer.getData("text");
+            const toolElement = createToolElement(tool);
+            const workbenchRect = event.target.getBoundingClientRect();
+            toolElement.style.position = 'absolute';
+            toolElement.style.left = `${event.clientX - workbenchRect.left - toolElement.offsetWidth / 2}px`;
+            toolElement.style.top = `${event.clientY - workbenchRect.top - toolElement.offsetHeight / 2}px`;
+            event.target.appendChild(toolElement);
+            
+            document.querySelectorAll('.math-tool-dragging').forEach(el => el.classList.remove('math-tool-dragging'));
+            updateWorkbenchState();
+        }
+
+        function createToolElement(tool) {
+            const element = document.createElement('div');
+            element.className = 'math-tool';
+            element.setAttribute('data-tool', tool);
+            element.innerHTML = getToolSymbolHTML(tool); // 使用 innerHTML 确保符号正确显示
+            element.style.cursor = 'grab';
+            element.draggable = true;
+            element.addEventListener('dragstart', drag);
+            element.addEventListener('dragend', (e) => e.target.classList.remove('math-tool-dragging'));
+            return element;
+        }
+
+        function getToolSymbol(tool) {
+            const symbols = {
+                '0': '0',
+                '1': '1',
+                '2': '2',
+                '3': '3',
+                '4': '4',
+                '5': '5',
+                '6': '6',
+                '7': '7',
+                '8': '8',
+                '9': '9',
+                'left-parenthesis': '（',
+                'right-parenthesis': '）',
+                'x': 'x',
+                'y': 'y',
+                'equal': '=',
+                'addition': '+',
+                'subtraction': '-',
+                'multiplication': '×',
+                'division': '÷',
+                'exponent': 'x^y',
+                'sqrt': '√'
+            };
+            return symbols[tool] || tool;
+        }
+
+        function getToolSymbolHTML(tool) {
+            const symbolsHTML = {
+                '0': '0',
+                '1': '1',
+                '2': '2',
+                '3': '3',
+                '4': '4',
+                '5': '5',
+                '6': '6',
+                '7': '7',
+                '8': '8',
+                '9': '9',
+                'left-parenthesis': '（',
+                'right-parenthesis': '）',
+                'x': 'x',
+                'y': 'y',
+                'equal': '=',
+                'addition': '+',
+                'subtraction': '-',
+                'multiplication': '×',
+                'division': '÷',
+                'exponent': 'x<sup>y</sup>',
+                'sqrt': '√'
+            };
+            return symbolsHTML[tool] || tool;
+        }
+
+        function updateWorkbenchState() {
+            const workbench = document.getElementById('workbench');
+            const state = Array.from(workbench.children).map(child => ({
+                tool: child.getAttribute('data-tool'),
+                left: child.style.left,
+                top: child.style.top
+            }));
+            undoStack.push(workbenchState);
+            workbenchState = state;
+            redoStack = [];
+        }
+
+        function undo() {
+            if (undoStack.length > 0) {
+                redoStack.push(workbenchState);
+                workbenchState = undoStack.pop();
+                renderWorkbench();
+            }
+        }
+
+        function redo() {
+            if (redoStack.length > 0) {
+                undoStack.push(workbenchState);
+                workbenchState = redoStack.pop();
+                renderWorkbench();
+            }
+        }
+
+        function clearWorkbench() {
+            if (workbenchState.length === 0) return; // 如果已经为空，则不执行
+            undoStack.push(workbenchState);
+            workbenchState = [];
+            redoStack = [];
+            
+            const workbench = document.getElementById('workbench');
+            workbench.classList.add('fade-out');
+            
+            setTimeout(() => {
+                renderWorkbench();
+                workbench.classList.remove('fade-out');
+            }, 500); // 与CSS的过渡时间相匹配
+        }
+
+        function renderWorkbench() {
+            const workbench = document.getElementById('workbench');
+            workbench.innerHTML = '';
+            workbenchState.forEach(item => {
+                const element = createToolElement(item.tool);
+                element.style.position = 'absolute';
+                element.style.left = item.left;
+                element.style.top = item.top;
+                workbench.appendChild(element);
+            });
+        }
+
+        function goBack() {
+            transitionScreens('experimentScreen', 'themeSelectionScreen');
+        }
+
+        window.addEventListener('load', function() {
+            document.querySelector('.container').style.opacity = '1';
+            document.getElementById('loading-screen').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
