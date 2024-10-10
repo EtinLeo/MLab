@@ -55,7 +55,7 @@
             -webkit-backdrop-filter: blur(20px);
             z-index: 1;
             position: relative;
-            overflow: visible; /* 修改为 visible 以防止工具提示被裁剪 */
+            overflow: visible;
             transition: all 0.5s ease-in-out;
         }
         #welcomeScreen, #themeSelectionScreen, #experimentScreen {
@@ -77,7 +77,7 @@
         }
         .welcome-text {
             font-family: 'Lora', serif;
-            font-size: 60px;
+            font-size: 80px;
             font-weight: 700;
             margin: 0 0 15px;
             background: linear-gradient(45deg, #FF4500, #FFA500, #FFD700, #7CFC00, #1E90FF, #9400D3);
@@ -89,20 +89,15 @@
         }
         .theme-selection-title {
             font-family: 'Noto Sans SC', sans-serif;
-            font-size: 28px;
+            font-size: 36px;
             font-weight: 700;
             margin-bottom: 20px;
             color: var(--text-color);
         }
-        .mathlab-by {
-            font-size: 16px;
-            margin-bottom: 20px;
-            color: var(--text-color);
-        }
         .button, .theme-button {
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 500;
-            padding: 8px 16px;
+            padding: 16px 24px;
             background-color: var(--button-color);
             color: var(--button-text-color);
             border: none;
@@ -166,7 +161,7 @@
             font-size: 18px;
             transition: all 0.3s ease;
             position: relative;
-            z-index: 20; /* 提升 z-index 以确保工具提示显示在上方 */
+            z-index: 20;
         }
         .control-button:hover {
             background-color: rgba(255, 255, 255, 0.9);
@@ -184,14 +179,14 @@
             border-radius: 6px;
             padding: 5px 10px;
             position: absolute;
-            z-index: 30; /* 确保工具提示在最上层 */
-            top: 100%; /* 调整为在按钮下方显示 */
+            z-index: 30;
+            top: 100%;
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.3s;
             white-space: nowrap;
-            margin-top: 5px; /* 增加一点间距 */
+            margin-top: 5px;
         }
         .control-button:hover .tooltip {
             visibility: visible;
@@ -248,7 +243,6 @@
             opacity: 0.5;
             cursor: grabbing;
         }
-        /* Placeholder样式 */
         .placeholder {
             position: absolute;
             width: 40px;
@@ -293,7 +287,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* 新增淡出动画类 */
         .fade-out {
             opacity: 0;
             transition: opacity 0.5s ease;
@@ -308,7 +301,7 @@
     <div class="container" role="main">
         <div id="welcomeScreen">
             <h1 id="mlab" class="welcome-text">MLab</h1>
-            <div class="mathlab-by" aria-label="Created by Etin Leo">By Etin Leo</div>
+            
             <button id="startButton" class="button" onclick="startExploration()" aria-label="Start exploring MLab">
                 Start
             </button>
@@ -356,9 +349,8 @@
                         <span class="tooltip">返回主题选择界面</span>
                     </button>
                 </div>
-                <div id="workbench"></div>
+                <div id="workbench" style="position: relative;"></div>
                 <div id="floatingToolbox">
-                    <!-- 数字工具 -->
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="0">0</div>
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="1">1</div>
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="2">2</div>
@@ -369,24 +361,18 @@
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="7">7</div>
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="8">8</div>
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="9">9</div>
-                    <!-- 括号工具 -->
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="leftParenthesis">（</div>
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="rightParenthesis">）</div>
-                    <!-- 变量工具 -->
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="x">x</div>
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="y">y</div>
-                    <!-- 等号 -->
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="equals">=</div>
-                    <!-- 运算符 -->
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="addition">+</div>
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="subtraction">-</div>
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="multiplication">×</div>
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="division">÷</div>
-                    <!-- 其他数学符号 -->
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="exponent">x<sup>y</sup></div>
                     <div class="math-tool" draggable="true" ondragstart="drag(event)" data-tool="sqrt">√</div>
                 </div>
-                <!-- 拖动预览元素 -->
                 <div id="dragPreview" class="math-tool" style="display: none;"></div>
             </div>
         </div>
@@ -400,6 +386,10 @@
         function selectTheme(theme) {
             console.log(`Selected theme: ${theme}`);
             const button = event.target.closest('.theme-button');
+            if (!button) {
+                console.error('Theme button not found');
+                return;
+            }
             button.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 button.style.transform = '';
@@ -419,7 +409,6 @@
             from.style.transform = 'translateY(-20px)';
             from.style.pointerEvents = 'none';
 
-            // Adjust container size based on the target screen
             if (toScreen === 'welcomeScreen') {
                 container.style.width = '40%';
                 container.style.height = '250px';
@@ -458,35 +447,7 @@
             const tool = event.currentTarget.getAttribute('data-tool');
             event.dataTransfer.setData("text", tool);
 
-            // 创建自定义拖动图像
-            const dragIcon = event.currentTarget.cloneNode(true);
-            dragIcon.style.position = 'absolute';
-            dragIcon.style.top = '-1000px';
-            dragIcon.style.left = '-1000px';
-            dragIcon.style.pointerEvents = 'none';
-            dragIcon.style.opacity = '0.8';
-            dragIcon.style.background = 'rgba(255,255,255,0.9)';
-            dragIcon.style.border = '1px solid #ccc';
-            dragIcon.style.borderRadius = '5px';
-            dragIcon.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-            dragIcon.style.fontSize = '18px';
-            dragIcon.style.fontFamily = 'inherit';
-            dragIcon.style.whiteSpace = 'nowrap';
-            document.body.appendChild(dragIcon);
-            event.dataTransfer.setDragImage(dragIcon, dragIcon.offsetWidth / 2, dragIcon.offsetHeight / 2);
-
-            // 延迟移除自定义拖动图像
-            setTimeout(() => {
-                document.body.removeChild(dragIcon);
-            }, 0);
-
             event.currentTarget.classList.add('math-tool-dragging');
-
-            // 显示拖动预览
-            const dragPreview = document.getElementById('dragPreview');
-            dragPreview.innerHTML = getToolSymbolHTML(tool);
-            dragPreview.style.display = 'flex';
-            dragPreview.classList.add('math-tool-dragging');
         }
 
         function allowDrop(event) {
@@ -518,53 +479,21 @@
             document.querySelectorAll('.math-tool-dragging').forEach(el => el.classList.remove('math-tool-dragging'));
             updateWorkbenchState();
 
-            // 移除高亮
             const workbench = document.getElementById('workbench');
             workbench.classList.remove('highlight');
-
-            // 隐藏拖动预览
-            const dragPreview = document.getElementById('dragPreview');
-            dragPreview.style.display = 'none';
-            dragPreview.innerHTML = '';
         }
 
         function createToolElement(tool) {
             const element = document.createElement('div');
             element.className = 'math-tool';
             element.setAttribute('data-tool', tool);
-            element.innerHTML = getToolSymbolHTML(tool); // 使用 innerHTML 确保符号正确显示
+            element.innerHTML = getToolSymbolHTML(tool);
             element.style.cursor = 'grab';
             element.draggable = true;
+            element.style.position = 'absolute';
             element.addEventListener('dragstart', drag);
             element.addEventListener('dragend', (e) => e.target.classList.remove('math-tool-dragging'));
             return element;
-        }
-
-        function getToolSymbol(tool) {
-            const symbols = {
-                '0': '0',
-                '1': '1',
-                '2': '2',
-                '3': '3',
-                '4': '4',
-                '5': '5',
-                '6': '6',
-                '7': '7',
-                '8': '8',
-                '9': '9',
-                'leftParenthesis': '（',
-                'rightParenthesis': '）',
-                'x': 'x',
-                'y': 'y',
-                'equals': '=',
-                'addition': '+',
-                'subtraction': '-',
-                'multiplication': '×',
-                'division': '÷',
-                'exponent': 'x^y',
-                'sqrt': '√'
-            };
-            return symbols[tool] || tool;
         }
 
         function getToolSymbolHTML(tool) {
@@ -623,18 +552,20 @@
         }
 
         function clearWorkbench() {
-            if (workbenchState.length === 0) return; // 如果已经为空，则不执行
-            undoStack.push(workbenchState);
-            workbenchState = [];
-            redoStack = [];
+            if (workbenchState.length === 0) return;
+            if (confirm("确认要清空工作台吗？这将导致所有内容丢失。")) {
+                undoStack.push(workbenchState);
+                workbenchState = [];
+                redoStack = [];
 
-            const workbench = document.getElementById('workbench');
-            workbench.classList.add('fade-out');
+                const workbench = document.getElementById('workbench');
+                workbench.classList.add('fade-out');
 
-            setTimeout(() => {
-                renderWorkbench();
-                workbench.classList.remove('fade-out');
-            }, 500); // 与CSS的过渡时间相匹配
+                setTimeout(() => {
+                    renderWorkbench();
+                    workbench.classList.remove('fade-out');
+                }, 500);
+            }
         }
 
         function renderWorkbench() {
@@ -642,7 +573,6 @@
             workbench.innerHTML = '';
             workbenchState.forEach(item => {
                 const element = createToolElement(item.tool);
-                element.style.position = 'absolute';
                 element.style.left = item.left;
                 element.style.top = item.top;
                 workbench.appendChild(element);
