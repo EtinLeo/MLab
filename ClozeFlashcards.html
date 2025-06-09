@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cloze Flashcards</title>
+<style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+    #card { border: 1px solid #aaa; border-radius: 8px; padding: 20px; width: 300px; }
+    button { margin-top: 10px; }
+</style>
+</head>
+<body>
+<div id="card">
+    <p id="question">He ___ to school every day.</p>
+    <p id="answer" style="display:none;">He goes to school every day.</p>
+    <button onclick="toggleAnswer()">显示答案</button>
+</div>
+
+<script>
+// 这里可以放多组完形填空句子
+const cards = [
+    { q: "He ___ to school every day.", a: "He goes to school every day." },
+    { q: "They ___ the movie last night.", a: "They watched the movie last night." },
+    // ...
+];
+
+let index = 0;
+function toggleAnswer() {
+    const ans = document.getElementById('answer');
+    if (ans.style.display === 'none') {
+        ans.style.display = 'block';
+    } else {
+        ans.style.display = 'none';
+        nextCard();
+    }
+}
+
+function nextCard() {
+    index = (index + 1) % cards.length;
+    document.getElementById('question').textContent = cards[index].q;
+    document.getElementById('answer').textContent = cards[index].a;
+}
+</script>
+</body>
+</html>
