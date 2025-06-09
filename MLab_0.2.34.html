@@ -94,7 +94,7 @@
             margin-bottom: 25px;
             color: var(--text-color);
         }
-        .mathlab-by {
+        .mlab-by {
             font-size: 18px;
             margin-bottom: 20px;
             color: var(--text-color);
@@ -268,7 +268,7 @@
     <div class="container" role="main">
         <div id="welcomeScreen">
             <h1 class="welcome-text">MLab</h1>
-            <div class="mathlab-by" aria-label="Created by Etin Leo">By Etin Leo</div>
+            <div class="mlab-by" aria-label="Created by Etin Leo">By Etin Leo</div>
             <button id="startButton" class="button" onclick="startExploration()" aria-label="Start exploring MLab">
                 Start
             </button>
@@ -276,19 +276,19 @@
         <div id="themeSelectionScreen">
             <h2 class="theme-selection-title">选择主题</h2>
             <div class="theme-buttons">
-                <button class="button theme-button" onclick="selectTheme('数与运算')">
+                <button class="button theme-button" onclick="selectTheme('数与运算', event)">
                     <i class="fas fa-calculator"></i>
                     数与运算
                 </button>
-                <button class="button theme-button" onclick="selectTheme('量与计量')">
+                <button class="button theme-button" onclick="selectTheme('量与计量', event)">
                     <i class="fas fa-balance-scale"></i>
                     量与计量
                 </button>
-                <button class="button theme-button" onclick="selectTheme('图形与几何')">
+                <button class="button theme-button" onclick="selectTheme('图形与几何', event)">
                     <i class="fas fa-shapes"></i>
                     图形与几何
                 </button>
-                <button class="button theme-button" onclick="selectTheme('概率与统计')">
+                <button class="button theme-button" onclick="selectTheme('概率与统计', event)">
                     <i class="fas fa-chart-bar"></i>
                     概率与统计
                 </button>
@@ -337,7 +337,7 @@
             }, 250);
         }
 
-        function selectTheme(theme) {
+        function selectTheme(theme, event) {
             console.log(`Selected theme: ${theme}`);
             const button = event.target.closest('.theme-button');
             button.style.transform = 'scale(0.95)';
